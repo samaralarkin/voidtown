@@ -10,9 +10,10 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.15.3",
+    "express": "^4.15.4",
     "body-parser": "^1.17.2",
-    "connect": "^3.6.3"
+    "connect": "^3.6.3",
+    "express-session": "^1.15.5"
   },
   "engines": {
     "node": "8.x"
