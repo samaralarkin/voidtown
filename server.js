@@ -4,6 +4,7 @@
 // init project
 var express = require('express');
 var connect = require('connect');
+var session = require('express-session');
 //express.bodyParser = require('body-parser');
 var app = express();
 
@@ -28,38 +29,58 @@ app.use(express.static('public'));
 //app.use(express.bodyParser());
 
 
+app.use(session({
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: true
+}))
+
+
+app.use(function (req, res, next) {
+  console.log('player' in req.session)
+  console.log(req.session)
+  if (!('player' in req.session)) {
+    console.log('foo');
+    req.session.player = new Player();
+  }
+  console.log('player' in req.session)
+  next();
+})
+
+
 // http://expressjs.com/en/starter/basic-routing.html
 app.get("/", function (request, response) {
+  console.log('bar');
   response.sendFile(__dirname + '/views/index.html');
 });
 
-app.get("/status", function (request, response) {
-  player.visibleWords = words[player.x.toString()+'-'+player.y.toString()];
-  console.log(player);
-  response.send(player);
+app.get("/status", function (req, response) {
+  req.session.player.visibleWords = words[req.session.player.x.toString() + '-' + req.session.player.y.toString()];
+  console.log(req.session.player);
+  response.send(req.session.player);
 });
 
 // could also use the POST body instead of query string: http://expressjs.com/en/api.html#req.body
-app.post("/", function (request, response) {
-  switch (request.body.action) {
+app.post("/", function (req, response) {
+  switch (req.body.action) {
     case "say":
-      if (request.body.content){
-        words[player.x.toString()+'-'+player.y.toString()] = request.body.content;
+      if (req.body.content){
+        words[req.session.player.x.toString()+'-'+req.session.player.y.toString()] = req.body.content;
       }
       break;
     case "move":
-      switch (request.body.direction) {
+      switch (req.body.direction) {
         case "east":
-          player.x += 1;
+          req.session.player.x += 1;
           break;
         case "west":
-          player.x -= 1;
+          req.session.player.x -= 1;
           break;
         case "north":
-          player.y += 1;
+          req.session.player.y += 1;
           break;
         case "south":
-          player.y -= 1;
+          req.session.player.y -= 1;
           break;
       }
       break;
