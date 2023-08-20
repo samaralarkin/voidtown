@@ -82,6 +82,12 @@ app.post("/", function (req, response) {
         case "south":
           req.session.player.y -= 1;
           break;
+        case "up":
+          req.session.player.z += 1;
+          break;
+        case "down":
+          req.session.player.z -= 1;
+          break;
       }
       break;
   }
